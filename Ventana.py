@@ -11,6 +11,8 @@ ANCHO, ALTO = 600, 600
 FILAS, COLUMNAS = 6, 6
 TAM_CASILLA = ANCHO // COLUMNAS
 
+fuente = pygame.font.SysFont(None, 36)
+
 # Colores
 BLANCO = (255, 255, 255)
 GRIS = (180, 180, 180)
@@ -42,18 +44,31 @@ while corriendo:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             corriendo = False
-        elif evento.type == pygame.MOUSEBUTTONDOWN:
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
             x, y = evento.pos
             fila = y // TAM_CASILLA
             columna = x // TAM_CASILLA
             tablero.alternar_boton(fila, columna)
+            Matriz=tablero.get_respuesta()
+            if tablero.esta_revelado(fila, columna):
+                print(Matriz[fila][columna])
     
     # Dibujar los botones
     for fila in range(FILAS):
         for columna in range(COLUMNAS):
+            rect = rectangulos[fila][columna]
+
             color = VERDE if tablero.esta_activo(fila, columna) else GRIS
-            pygame.draw.rect(pantalla, color, rectangulos[fila][columna])
-            pygame.draw.rect(pantalla, AZUL, rectangulos[fila][columna], 2)
+            pygame.draw.rect(pantalla, color, rect)
+            pygame.draw.rect(pantalla, AZUL, rect, 2)
+
+           # Muestra el numero de la casilla al momento de presionarla
+            if tablero.esta_revelado(fila, columna): #Esta funcion tambien sirve con esta_activo(). PEro me parece mejor cada funcion tenga su matriz de Falses separadas
+                numero = tablero.get_respuesta()[fila][columna]
+                texto = fuente.render(str(numero), True, (0, 0, 0))  # Negro
+                texto_rect = texto.get_rect(center=rect.center)
+                pantalla.blit(texto, texto_rect)
+                        
 
     pygame.display.flip()
     clock.tick(60)
